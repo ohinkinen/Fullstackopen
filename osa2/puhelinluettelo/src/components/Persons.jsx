@@ -7,7 +7,7 @@ const Persons = ({persons, filter}) => (
           person.number.includes(filter)
       )
       .map((person) => (
-        <p>
+        <p key={person.id}>
           {person.name} {person.number}
         </p>
       ))}
