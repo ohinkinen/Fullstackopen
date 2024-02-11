@@ -1,20 +1,44 @@
 import personService from "../services/persons";
 
-const Persons = ({ persons, setPersons, filter }) => {
+const Persons = ({ persons, setPersons, filter, setMessage }) => {
   const deleteAndFilter = (id, name) => {
     return () => {
       if (window.confirm(`Delete ${name}?`)) {
         personService
           .deletePerson(id, name)
           .then((deletedPerson) => {
-            window.alert(`${name} deleted successfully!`);
+            setMessage({
+              error: false,
+              data: `${deletedPerson.name} deleted successfully!`,
+            });
+            setTimeout(() => {
+              setMessage(null);
+            }, 7000);
             setPersons(
               persons.filter((person) => person.id !== deletedPerson.id)
             );
           })
           .catch((error) => {
-            console.error(error);
-            alert("Something went wrong!");
+            if (error.response && error.response.status === 404) {
+              setMessage({
+                error: true,
+                data: `${name} doesn't exist in the server`,
+              });
+              setPersons(persons.filter(person => person.id !== id));
+            } else if (error.code === "ERR_NETWORK") {
+              setMessage({
+                error: true,
+                data: "Failed to connect to server, try again!",
+              });
+            } else {
+              setMessage({
+                error: true,
+                data: `Something went wrong, try again!`,
+              });
+            }
+            setTimeout(() => {
+              setMessage(null);
+            }, 7000);
           });
       }
     };
