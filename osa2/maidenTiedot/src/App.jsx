@@ -3,6 +3,7 @@ import Search from "./components/Search";
 import CountryList from "./components/CountryList";
 import Country from "./components/Country";
 import countryService from "./services/countries";
+import weatherService from "./services/weather";
 
 function App() {
   const [countries, setCountries] = useState(null);
@@ -10,6 +11,7 @@ function App() {
   const [countrySearch, setCountrySearch] = useState("");
   const [filteredCountries, setFilteredCountries] = useState(null);
   const [country, setCountry] = useState(null);
+  const [weather, setWeather] = useState(null);
 
   useEffect(() => {
     countryService.getCountries().then((countries) => {
@@ -48,6 +50,17 @@ function App() {
     }
   }, [countrySearch]);
 
+  useEffect(() => {
+    if (!country) {
+      setWeather(null);
+      return;
+    }
+
+    weatherService.getWeather(country.capitalInfo.latlng[0], country.capitalInfo.latlng[1]).then((weather) => {
+      setWeather(weather);
+    });
+  }, [country]);
+
   return (
     <>
       <Search
@@ -63,7 +76,7 @@ function App() {
         filteredCountries={filteredCountries}
       />
 
-      <Country country={country} />
+      <Country country={country} weather={weather} />
     </>
   );
 }

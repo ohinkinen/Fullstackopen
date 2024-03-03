@@ -1,5 +1,5 @@
-const Country = ({ country }) => {
-  if (!country) {
+const Country = ({ country, weather }) => {
+  if (!country || !weather) {
     return;
   }
 
@@ -19,6 +19,11 @@ const Country = ({ country }) => {
         src={country.flags.png}
         alt={`Flag of the country ${country.name.common}`}
       />
+      <br />
+      <h2>Weather in {country.capital[0]}</h2>
+      <p>Temperature: {weather.main.temp} Celcius</p>
+      <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}.png`} />
+      <p>Wind: {weather.wind.speed} m/s</p>
     </>
   );
 };
