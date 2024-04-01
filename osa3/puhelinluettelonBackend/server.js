@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 const port = 3001;
 const persons = {
@@ -25,8 +26,13 @@ const persons = {
     },
   ],
 };
+morgan.token('body', (req, res) => {
+  return JSON.stringify(req.body);
+});
 
 app.use(express.json());
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body', { skip: (req, res) => {return req.method !== 'POST' }}));
+app.use(morgan('tiny', {skip: (req, res) => {return req.method === 'POST'}}));
 
 app.get("/", (req, res) => {
   res.send(`This is an Express server running on port ${port}!`);
@@ -82,7 +88,7 @@ app.post("/api/persons", (req, res) => {
   const newId = Math.floor(Math.random() * 1000000).toString();
 
   while (ids.includes(newId)) {
-    newId = Math.floor(Math.random() * 1000000);
+    newId = Math.floor(Math.random() * 1000000).toString();
   }
 
   const newPerson = {
@@ -93,9 +99,7 @@ app.post("/api/persons", (req, res) => {
 
   persons.persons = persons.persons.concat(newPerson);
 
-  console.log(persons.persons);
-
-  res.status(201).end();
+  res.status(201).json(newPerson);
 });
 
 app.get("/info", (req, res) => {
