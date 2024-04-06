@@ -63,7 +63,7 @@ app.delete("/api/persons/:id", (req, res) => {
 
   if (person) {
     persons.persons = persons.persons.filter((person) => person.id !== id);
-    res.send("Person deleted successfully!");
+    res.status(200).json(person);
   } else {
     res.status(404).send("Person not found!");
   }
